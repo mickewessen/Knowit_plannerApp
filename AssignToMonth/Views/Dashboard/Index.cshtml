@@ -1,0 +1,172 @@
+﻿@model DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <a asp-action="Index" asp-controller="AllocateTimes">
+                <div class="card-counter danger">
+                    <i class="fas fa-hourglass-start"></i>
+                    <span class="count-name">Planera</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a asp-action="Index" asp-controller="Customers">
+                <div class="card-counter success">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="count-numbers">@Model.TotalProjects</span>
+                    <span class="count-name">Kunder</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a asp-action="Index" asp-controller="Users">
+                <div class="card-counter info">
+                    <i class="fa fa-users"></i>
+                    <span class="count-numbers">@Model.TotalUsers</span>
+                    <span class="count-name">Användare</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<p>
+    @using (Html.BeginForm("Index", "Dashboard", FormMethod.Get))
+    {
+        <div class="col-2 p-0">
+            <span>År</span>@Html.DropDownList("year", new SelectList(ViewBag.Year), "Välj år", new { @class = "form-control" })
+            <span>Månad</span>@Html.DropDownList("month", new SelectList(ViewBag.Month), "Välj månad", new { @class = "form-control" })
+            <input class="btn btn-dark mt-3 col-12" type="submit" value="Sök" />
+        </div>
+
+    }
+</p>
+<div class="dashboard-overview mt-2">
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+            <a class="nav-link active rounded-0" data-toggle="pill" href="#home">Användare</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link rounded-0" data-toggle="pill" href="#menu1">Kunder</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane container active p-0" id="home">
+            <h5 class="text-uppercase p-2 text-center">Användare</h5>
+            <table class="table styled-table-users">
+                <thead class="text-white" style="background-color: #26c6da;">
+                    <tr>
+                        <th>@Html.DisplayNameFor(m => Model.AssignedUsersToMonths.FirstOrDefault().Month.DisplayMonth)</th>
+                        <th>@Html.DisplayNameFor(m => Model.Users.FirstOrDefault().DisplayName)</th>
+                        <th>Månad (h)</th>
+                        <th>@Html.DisplayNameFor(m => Model.AssignedUsersToMonths.FirstOrDefault().Absence)<span> (h)</span></th>
+                        <th>Total tid (h)</th>
+                        <th>Allokerad tid</th>
+                        <th>Tid kvar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.AssignedUsersToMonths)
+                    {
+                        <tr class="userInfo">
+                            <td>@user.Month.DisplayMonth </td>
+                            <td>@user.User.DisplayName</td>
+                            <td>@user.Month.Hours</td>
+                            <td>@user.Absence</td>
+                            <td class="totalHours">
+                                @String.Format(("{0:n0}"), user.TotalHours())
+                            </td>
+                            <td class="assignedHours">
+                                @{
+                                    int sum = 0;
+                                    @foreach (var hours in user.AllocateTimes)
+                                    {
+                                        sum += Convert.ToInt32(hours.AllocatedHours);
+                                    }
+                                    @Html.DisplayTextFor(m => sum)
+                                }
+                            </td>
+                            <td class="hoursLeft">
+                                @{ 
+                                    var value = (user.TotalHours() - sum);
+                                    var displayValue = String.Format("{0:N0}", value);
+                                    @Html.DisplayTextFor(m => displayValue);
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane container fade p-0" id="menu1">
+            <h5 class="text-uppercase p-2 text-center">Kunder</h5>
+            <table class="table styled-table-customers">
+                <thead class="text-white" style="background-color:#66bb6a;">
+                    <tr>
+                        <th>@Html.DisplayNameFor(m => Model.AssignedCustomerToMonths.FirstOrDefault().Month.DisplayMonth)</th>
+                        <th>@Html.DisplayNameFor(m => Model.AssignedCustomerToMonths.FirstOrDefault().Customer.Name)</th>
+                        <th>@Html.DisplayNameFor(m => Model.AssignedCustomerToMonths.FirstOrDefault().FTE)</th>
+                        <th>Totalt (h)</th>
+                        <th>Allokerad tid</th>
+                        <th>Tid kvar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var customer in Model.AssignedCustomerToMonths)
+                    {
+                        <tr>
+                            <td>@customer.Month.DisplayMonth</td>
+                            <td>@customer.Customer.Name</td>
+                            <td>@customer.FTE</td>
+                            <td>@customer.FteToHours()</td>
+                            <td>
+                                @{
+                                    int sum = 0;
+
+                                    if (customer.AllocateTimes == null)
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        foreach (var hours in customer.AllocateTimes)
+                                        {
+
+                                            sum += Convert.ToInt32(hours.AllocatedHours);
+                                        }
+
+                                        @Html.DisplayTextFor(m => sum)
+                                    }
+
+                                }
+                            </td>
+                            <td>
+                                @{
+                                    var value = (customer.FteToHours() - sum);
+                                    var displayValue = String.Format("{0:N0}", value);
+                                    @Html.DisplayTextFor(m => displayValue);
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript">
+
+    </script>
+}

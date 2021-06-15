@@ -1,0 +1,20 @@
+.customer-top-bar {
+    box-shadow: 2px 2px 10px #DADADA;
+    padding: 20px 10px;
+    background-color: #66bb6a;
+    height: 130px;
+    border-radius: 5px;
+    transition: .3s linear all;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.customer-top-bar i{
+    font-size: 5em;
+    opacity: 0.2;
+ }
+
+.customer-top-bar h1 {
+    margin-left: 1rem;
+}

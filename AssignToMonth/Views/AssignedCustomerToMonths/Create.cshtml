@@ -1,0 +1,93 @@
+﻿@model List<AssignCustomerToMonth>
+
+@{
+    ViewData["Title"] = "Planera kunder";
+}
+
+<div class="customer-top-bar">
+    <i class="fas fa-user-tie"></i>
+    <h1>Kund/Månadsplanering</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        @using (Html.BeginForm("Create", "AssignedCustomerToMonths", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <div>
+                <a href="#" id="addNew"><i class="fas fa-plus-square" style="color:green"></i></a>
+            </div>
+
+            <table id="dataTable" class="table">
+                <tr>
+                    <th>Kund</th>
+                    <th>Månad</th>
+                    <th>FTE</th>
+                    <th></th>
+                </tr>
+                @if (Model != null && Model.Count > 0)
+                {
+                    int j = 0;
+                    foreach (var i in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DropDownListFor(a => a[j].CustomerId, (SelectList)ViewBag.Customers, htmlAttributes: new { @class = "form-control" })
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(a => a[j].MonthId, (SelectList)ViewBag.Months, htmlAttributes: new { @class = "form-control" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(a => a[j].FTE, new { @class = "form-control" })
+                            </td>
+                            <td>
+                                @if (j < 1)
+                                {
+                                    <a href="#" class="remove"><i class="far fa-times-circle" style="color:red"></i></a>
+                                }
+                            </td>
+                        </tr>
+                        j++;
+                    }
+                }
+            </table>
+            <div class="mb-2" style="color:red">@ViewBag.Message</div>
+            <input type="submit" class="btn btn-success" value="Spara" />
+        }
+        <div class="mt-2">
+            <a asp-action="Index">Tillbaka</a>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //1. Add new row
+            $("#addNew").click(function (e) {
+                e.preventDefault();
+                var last = $('#dataTable>tbody>tr:last');
+                if (last.length > 0) {
+                    var name = last.children().find('input,select,a')[0].name;
+                    var index = Number(name.replace(/[^0-9]/gi, '')) + 1;
+                    var tr = ('<tr>' + last.html().replace(/[0-9]+__/gi, index + '__') + '</tr>').replace(/\[[0-9]+\]+[.]/gi, '[' + index + '].');
+                    $('#dataTable tbody').append(tr);
+                }
+            });
+
+            // 2. Remove
+            $('body').on("click", "a.remove", function (e) {
+                e.preventDefault();
+                $(this).parent().parent().remove();
+            });
+
+        });
+    </script>
+}

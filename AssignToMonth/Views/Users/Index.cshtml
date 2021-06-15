@@ -1,0 +1,18 @@
+﻿@model IEnumerable<AssignToMonth.Models.User>
+
+@{
+    ViewData["Title"] = "Team";
+}
+
+
+
+<div class="user-top-bar">
+    <i class="fa fa-users"></i>
+    <h1>Team</h1>
+</div>
+
+<p>
+    <a asp-action="Create">Skapa ny användare</a>
+</p>
+<partial name="_userCardPartial" />
+

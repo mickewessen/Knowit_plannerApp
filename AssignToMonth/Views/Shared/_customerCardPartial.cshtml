@@ -1,0 +1,22 @@
+﻿@model IEnumerable<Customer>
+<link rel="stylesheet" href="~/css/customercard.css" />
+
+<div class="row">
+    @foreach (var customer in Model)
+    {
+        <div class="col-md-4">
+            <div class="customer-card customer">
+                <div class="d-flex justify-content-between">
+                    <i class="fas fa-user-tie"></i>
+                    <div>
+                        <span class="customer-name">@customer.Name</span>
+                    </div>
+                </div>
+                <div class="customer-panel">
+                    <a asp-action="Edit" asp-route-id="@customer.Id">Editera</a> |
+                    <a asp-action="Delete" asp-route-id="@customer.Id">Ta bort</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

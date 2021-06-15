@@ -1,0 +1,22 @@
+.user-top-bar{
+    box-shadow: 2px 2px 10px #DADADA;
+    padding: 20px 10px;
+    background-color: #26c6da;
+    height: 130px;
+    border-radius: 5px;
+    transition: .3s linear all;
+    display: flex;
+    align-items: center;
+    color: white;
+  }
+
+.user-top-bar i{
+    font-size: 5em;
+    opacity: 0.2;
+ }
+
+.user-top-bar h1 {
+    margin-left: 1rem;
+}
+  
+  

@@ -1,0 +1,15 @@
+﻿@model IEnumerable<Customer>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="customer-top-bar">
+    <i class="fas fa-user-tie"></i>
+    <h1>Kunder</h1>
+</div>
+<p>
+    <a asp-action="Create">Skapa ny kund</a>
+</p>
+<partial name="_customerCardPartial" />
+

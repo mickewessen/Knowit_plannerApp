@@ -1,0 +1,153 @@
+﻿@model IEnumerable<AssignCustomerToMonth>
+
+@{
+    ViewData["Title"] = "Planering kund";
+}
+
+<div class="customer-top-bar">
+    <i class="fas fa-user-tie"></i>
+    <h1>Kund/Månadsplanering</h1>
+</div>
+
+<a asp-action="Create">Planera ny månad</a>
+
+<div class="col-2 p-0">
+    @using (Html.BeginForm("Index", "AssignedCustomerToMonths", FormMethod.Get))
+    {
+        <span class="mr-1">År</span>@Html.DropDownList("year", new SelectList(ViewBag.Year), "Välj år", new { @class = "form-control" })
+        <span class="mr-1">Månad</span>@Html.DropDownList("month", new SelectList(ViewBag.Month), "Välj månad", new { @class = "form-control" })
+        <input class="btn btn-dark mt-3 col-12" type="submit" value="Sök" />
+    }
+</div>
+
+<table id="tblCustomers" class="table styled-table-customers mt-2">
+    <thead>
+        <tr>
+            <td hidden>
+                @Html.DisplayNameFor(model => model.Id)
+            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.Month)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FTE)
+            </th>
+            <th>Timmar</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="Id" hidden>
+                    <span>@Html.DisplayFor(modelItem => item.Id)</span>
+                </td>
+                <td class="Month">
+                    <span>@Html.DisplayFor(modelItem => item.Month.DisplayMonth)</span>
+                </td>
+                <td class="Name">
+                    <span>@Html.DisplayFor(modelItem => item.Customer.Name)</span>
+                </td>
+                <td class="FTE">
+                    <span>@Html.DisplayFor(modelItem => item.FTE)</span>
+                    <input type="number" class="form-control-sm" value="@item.FTE" style="display:none" />
+                </td>
+                <td>
+                    @item.FteToHours()
+                </td>
+                <td>
+                    <a class="Edit" href="javascript:;">Editera</a>
+                    <a class="Update" href="javascript:;" style="display:none">Uppdatera</a>
+                    <a class="Cancel" href="javascript:;" style="display:none">Avbryt</a>
+                    <a class="Delete" asp-action="Delete" asp-route-id="@item.Id">Ta bort</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="col-12 align-content-center">
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page, currentYear = ViewBag.CurrentYear, currentMonth = ViewBag.CurrentMonth, }), new X.PagedList.Web.Common.PagedListRenderOptions
+    {
+        ContainerDivClasses = new[] { "navigation" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" },
+    })
+</div>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript">
+        //Edit
+        $("body").on("click", "#tblCustomers .Edit", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    $(this).find("input").show();
+                    $(this).find("span").hide();
+                }
+            });
+            row.find(".Update").show();
+            row.find(".Cancel").show();
+            row.find(".Delete").hide();
+            $(this).hide();
+        });
+
+        //Update
+        $("body").on("click", "#tblCustomers .Update", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    span.html(input.val());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+            row.find(".Cancel").hide();
+            $(this).hide(); 
+
+            var _customer = {
+                Id: row.find(".Id").find("span").text(),
+                Month:row.find(".Month").find("span").text(),
+                Name: row.find(".Name").find("span").text(),
+                FTE: row.find(".FTE").find("span").text(), 
+            }
+            $.ajax({
+                type: "POST",
+                url: "/AssignedCustomerToMonths/UpdateCustomer",
+                data: _customer,
+                dataType: "json",                
+            });
+            console.log(_customer)
+        });
+
+        //Cancel
+        $("body").on("click", "#tblCustomers .Cancel", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    input.val(span.html());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+            row.find(".Update").hide();
+            $(this).hide();
+        });
+    </script>
+}

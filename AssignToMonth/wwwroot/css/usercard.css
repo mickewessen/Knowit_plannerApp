@@ -1,0 +1,44 @@
+﻿.user-card {
+    box-shadow: 2px 2px 10px #DADADA;
+    margin: 5px;
+    padding: 20px 10px;
+    background-color: #fff;
+    height: 130px;
+    border-radius: 5px;
+    transition: .3s linear all;
+}
+
+    .user-card:hover {
+        box-shadow: 4px 4px 20px #DADADA;
+        transition: .3s linear all;
+    }
+
+    .user-card.user {
+        background-color: #26c6da;
+        color: #FFF;
+    }
+
+    .user-card i {
+        font-size: 5em;
+        opacity: 0.2;
+    }
+
+    .user-card .user-firstname {
+        font-size: 1.7rem;
+    }
+
+    .user-card .user-lastname {
+        font-style: italic;
+        text-transform: capitalize;
+        opacity: 0.5;
+        font-size: 1.3rem;
+    }
+
+.user-panel a {
+    color: white;
+}
+
+.user-panel i {
+    font-size: 16px;
+    opacity: 1;
+}

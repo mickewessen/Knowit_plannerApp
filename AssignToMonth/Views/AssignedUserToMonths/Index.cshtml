@@ -1,0 +1,167 @@
+﻿@model IEnumerable<AssignToMonth.Models.AssignedMonth>
+
+@{
+    ViewData["Title"] = "Planering team";
+}
+
+<div class="user-top-bar">
+    <i class="fa fa-users"></i>
+    <h1>Team/Månadsplanering</h1>
+</div>
+
+<p>
+    <a asp-action="Create">Planera ny månad</a>
+</p>
+
+<p>
+    <div class="col-2 p-0">
+        @using (Html.BeginForm("Index", "AssignedUserToMonths", FormMethod.Get))
+        {
+            <span>År</span>@Html.DropDownList("year", new SelectList(ViewBag.Year), "Välj år", new { @class = "form-control" })
+            <span>Månad</span>@Html.DropDownList("month", new SelectList(ViewBag.Month), "Välj månad", new { @class = "form-control" })
+            <span>Användare</span>@Html.DropDownList("user", new SelectList(ViewBag.Users), "Välj användare", new { @class = "form-control" })
+            <input class="btn btn-dark mt-3 col-12" type="submit" value="Sök" />
+        }
+    </div>
+</p>
+<table id="tblUsers" class="table styled-table-users mt-2">
+    <thead>
+        <tr>
+            <th hidden>
+                @Html.DisplayNameFor(model => model.Month.Year)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Month)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Month.Hours)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Absence)
+            </th>
+            <th>
+                Totala timmar
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="Id" hidden>
+                    <span>@item.Id</span>
+                </td>
+                <td class="Month">
+                    <span>@Html.DisplayFor(modelItem => item.Month.DisplayMonth)</span>
+                </td>
+                <td class="Name">
+                    <span>@Html.DisplayFor(modelItem => item.User.DisplayName)</span>
+                </td>
+                <td class="WorkHours">
+                    <span>@Html.DisplayFor(modelItem => item.Month.Hours)</span>
+                </td>
+                <td class="Absence">
+                    <span>@Html.DisplayFor(modelItem => item.Absence)</span>
+                    <input type="number" class="form-control-sm" value="@item.Absence" style="display:none" />
+                </td>
+                <td>
+                    @String.Format(("{0:n0}"), item.TotalHours())
+                </td>
+                <td>
+                    <a class="Edit" href="javascript:;">Editera |</a>
+                    <a class="Update" href="javascript:;" style="display:none">Uppdatera |</a>
+                    <a class="Cancel" href="javascript:;" style="display:none">Avbryt</a>
+                    <a class="Delete" asp-action="Delete" asp-route-id="@item.Id">Ta bort</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br />
+<div class="col-12 align-content-center">
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page, currentUser = ViewBag.CurrentUser, currentYear = ViewBag.CurrentYear, currentMonth = ViewBag.CurrentMonth, }), new X.PagedList.Web.Common.PagedListRenderOptions
+    {
+        ContainerDivClasses = new[] { "navigation" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" },
+    })
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript">
+        //Edit
+        $("body").on("click", "#tblUsers .Edit", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    $(this).find("input").show();
+                    $(this).find("span").hide();
+                }
+            });
+            row.find(".Update").show();
+            row.find(".Cancel").show();
+            row.find(".Delete").hide();
+            $(this).hide();
+        });
+
+        //Update
+        $("body").on("click", "#tblUsers .Update", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    span.html(input.val());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+            row.find(".Cancel").hide();
+            $(this).hide();
+
+            var _user = {
+                Id: row.find(".Id").find("span").text(),
+                Month: row.find(".Month").find("span").text(),
+                Name: row.find(".Name").find("span").text(),
+                WorkHours: row.find(".WorkHours").find("span").text(),
+                Absence: row.find(".Absence").find("span").text(), 
+            }
+            $.ajax({
+                type: "POST",
+                url: "/AssignedUserToMonths/UpdateUser",
+                data: _user,
+                dataType: "json"
+            });
+            console.log(_user)
+        });
+
+        //Cancel
+        $("body").on("click", "#tblUsers .Cancel", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    input.val(span.html());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+            row.find(".Update").hide();
+            $(this).hide();
+        });
+    </script>
+}
+

@@ -1,0 +1,99 @@
+﻿@model List<Customer>
+
+@{
+    ViewData["Title"] = "Skapa kund";
+}
+
+<div class="customer-top-bar">
+    <i class="fas fa-user-tie"></i>
+    <h1>Kund/Lägg till</h1>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        @using (Html.BeginForm("Create", "Customers", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <div class="mt-2">
+                <a href="#" id="addNew"><i class="fas fa-plus-square" style="color:green"></i></a>
+            </div>
+
+            <table id="dataTable" class="table">
+                <tr>
+                    <th>Kund</th>
+                    <th></th>
+                </tr>
+                @if (Model != null && Model.Count > 0)
+                {
+                    int j = 0;
+                    foreach (var i in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.TextBoxFor(a => a[j].Name, new { @class = "form-control" })
+                                <span>@Html.ValidationMessageFor(a => a[j].Name, "", new { @class = "text-danger" })</span>
+                            </td>
+                            
+                            <td>
+                                @if (j > 0)
+                                {
+                                    <a href="#" class="remove"><i class="far fa-times-circle" style="color:red"></i></a>
+                                }
+                            </td>
+                        </tr>
+                        j++;
+                    }
+                }
+            </table>
+            <div class="mb-2" style="color:red">@ViewBag.Message</div>
+            <input type="submit" class="btn btn-success" value="Spara" />
+        }
+        <div class="mt-2">
+            <a asp-action="Index">Tillbaka</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //1. Add new row
+            $("#addNew").click(function (e) {
+                e.preventDefault();
+                var $tableBody = $("#dataTable");
+                var $trLast = $tableBody.find("tr:last");
+                var $trNew = $trLast.clone();
+
+                var suffix = $trNew.find(':input:first').attr('name').match(/\d+/);
+                $trNew.find("td:last").html('<a href="#" class="remove"><i class="far fa-times-circle" style="color:red"></i></a>');
+                $.each($trNew.find(':input'), function (i, val) {
+                    // Replaced Name
+                    var oldN = $(this).attr('name');
+                    var newN = oldN.replace('[' + suffix + ']', '[' + (parseInt(suffix) + 1) + ']');
+                    $(this).attr('name', newN);
+                    //Replaced value
+                    var type = $(this).attr('type');
+                    if (type.toLowerCase() == "text") {
+                        $(this).attr('value', '');
+                    }
+
+                    // If you have another Type then replace with default value
+                    $(this).removeClass("input-validation-error");
+
+                });
+                $trLast.after($trNew);
+            });
+
+            // 2. Remove
+            $('body').on("click", "a.remove", function (e) {
+                e.preventDefault();
+                $(this).parent().parent().remove();
+            });
+
+        });
+    </script>
+}

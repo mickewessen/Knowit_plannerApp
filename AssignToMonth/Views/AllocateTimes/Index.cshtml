@@ -1,0 +1,279 @@
+﻿@model AllocateTimeViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="planner-top-bar">
+    <i class="fas fa-hourglass-start"></i>
+    <h1>Planering</h1>
+</div>
+
+
+<a asp-action="Create">Planera ny månad</a>
+<div class="d-flex justify-content-between">
+    <div class="col-2 p-0 ">
+        @using (Html.BeginForm("Index", "AllocateTimes", FormMethod.Get))
+        {
+            <span class="mr-1">År</span>@Html.DropDownList("year", new SelectList(ViewBag.Year), "Välj år", new { @class = "form-control" })
+            <span class="mr-1">Månad</span>@Html.DropDownList("month", new SelectList(ViewBag.Month), "Välj månad", new { @class = "form-control" })
+            <span class="mr-1">Kund</span>@Html.DropDownList("customer", new SelectList(ViewBag.Customers), "Välj kund", new { @class = "form-control" })
+            <input class="btn btn-dark mt-3 col-12" type="submit" value="Sök" />
+        }
+    </div>
+
+    <div class="col-8">
+        <table id="tblOverview" class="table">
+            <thead>
+                <tr>
+                    <th>Månad</th>
+                    <th>Kund</th>
+                    <th>Totalt</th>
+                    <th>Planerat</th>
+                    <th>Tid kvar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var customer in Model.GetAllCustomers)
+                {
+                    <tr>
+                        <td>
+                            @customer.Month.DisplayMonth
+                        </td>
+                        <td>
+                            @customer.Customer.Name
+                        </td>
+                        <td>
+                            @customer.FteToHours()
+                        </td>
+                        <td>
+                            @{
+                                int sum = 0;
+                                @foreach (var hours in customer.AllocateTimes)
+                                {
+                                    sum += Convert.ToInt32(hours.AllocatedHours);
+                                }
+                                @Html.DisplayTextFor(m => sum)
+                            }
+                        </td>
+                        <td>
+                            @{
+                                var value = (customer.FteToHours() - sum);
+                                var displayValue = String.Format("{0:N0}", value);
+                                @Html.DisplayTextFor(m => displayValue);
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mb-2" style="color:red">
+    <strong>@TempData["UserError"]</strong>
+</div>
+<div class="mb-2" style="color:red">
+    <strong>@TempData["CustomerError"]</strong>
+</div>
+
+<table id="tblAllocateTime" class="table styled-table-allocatetime mt-2">
+    <thead>
+        <tr>
+            <th>
+                Månad
+            </th>
+            <th>
+                Namn
+            </th>
+            <th>
+                Tillgänglig tid
+            </th>
+            <th>
+                Kund
+            </th>
+            <th>
+                Allokerad tid
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+    <tbody>
+        @*@foreach (var user in Model.AllocatedUsers)
+        {
+        <tr>
+            <td class="Id" hidden>
+                <span>@user.AllocateTimes.FirstOrDefault().Id</span>
+            </td>
+            <td class="Month">
+                <span>@Html.DisplayFor(modelItem => user.Month.DisplayMonth)</span>
+            </td>
+            <td class="UserId" hidden>
+                <span>@user.UserId</span>
+            </td>
+            <td class="Name">
+                <span>@Html.DisplayFor(modelItem => user.User.DisplayName) - (@String.Format(("{0:n0}"), user.TotalHours()))</span>
+            </td>
+            <td class="WorkHours">
+                <span>@String.Format(("{0:n0}"), user.TotalHours() - user.AllocateTimes.FirstOrDefault().AllocatedHours)</span>
+            </td>
+            <td class="CustomerId" hidden>
+                <span>@user.AllocateTimes.FirstOrDefault().CustomerId</span>
+            </td>
+            <td class="Customer">
+                @foreach (var customer in user.AllocateTimes)
+                {
+                    <span>@Html.DisplayFor(modelItem => customer.Customer.Customer.Name)</span><br />
+                }
+            </td>
+
+            <td class="AllocatedHours">
+                @foreach (var customer in user.AllocateTimes)
+                {
+                    <span>@Html.DisplayFor(modelItem => user.AllocateTimes.FirstOrDefault().AllocatedHours)</span>
+                    <input type="number" class="form-control-sm" value="@user.AllocateTimes.FirstOrDefault().AllocatedHours" style="display:none" /><br />
+                }
+            </td>
+            <td>
+                @foreach (var customer in user.AllocateTimes)
+                {
+                    <a class="Edit" href="javascript:;">Editera |</a>
+                    <a class="Update" href="javascript:;" style="display:none">Uppdatera |</a>
+                    <a class="Cancel" href="javascript:;" style="display:none">Avbryt</a>
+                    <a class="Delete" href="javascript:;">Ta bort</a>
+                    <br />
+                }
+            </td>
+                <td>
+
+
+                </td>
+
+            </tr>
+        }*@
+        @foreach (var item in Model.AllocateTimes)
+        {
+            <tr>
+                <td class="Id" hidden>
+                    <span>@item.Id</span>
+                </td>
+                <td class="Month">
+                    <span>@Html.DisplayFor(modelItem => item.User.Month.DisplayMonth)</span>
+                </td>
+                <td class="UserId" hidden>
+                    <span>@item.UserId</span>
+                </td>
+                <td class="Name">
+                    <span>
+                        @Html.DisplayFor(modelItem => item.User.User.DisplayName) @*- (@String.Format(("{0:n0}"), item.User.TotalHours()))*@</span>
+                </td>
+                <td class="WorkHours">
+                    <span>
+                        @{
+                            int sum = 0;
+                            @foreach (var hours in item.User.AllocateTimes)
+                            {
+                                sum += Convert.ToInt32(hours.AllocatedHours);
+                            }
+                        }
+                        @String.Format(("{0:n0}"), item.User.TotalHours() - sum)
+                    </span>
+                </td>
+                <td class="CustomerId" hidden>
+                    <span>@item.CustomerId</span>
+                </td>
+                <td class="Customer">
+                    <span>@Html.DisplayFor(modelItem => item.Customer.Customer.Name)</span>
+                </td>
+                <td class="AllocatedHours">
+                    <span>@Html.DisplayFor(modelItem => item.AllocatedHours)</span>
+                    <input type="number" class="form-control-sm" value="@item.AllocatedHours" style="display:none" />
+                </td>
+                <td>
+                    <a class="Edit" href="javascript:;">Editera |</a>
+                    <a class="Update" href="javascript:;" style="display:none">Uppdatera |</a>
+                    <a class="Cancel" href="javascript:;" style="display:none">Avbryt</a>
+                    <a class="Delete" href="javascript:;">Ta bort</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript">
+        //Edit
+        $("body").on("click", "#tblAllocateTime .Edit", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    $(this).find("input").show();
+                    $(this).find("span").hide();
+                }
+            });
+            row.find(".Update").show();
+            row.find(".Cancel").show();
+            row.find(".Delete").hide();
+            $(this).hide();
+        });
+
+        //Update
+        $("body").on("click", "#tblAllocateTime .Update", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    span.html(input.val());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+            row.find(".Cancel").hide();
+            $(this).hide();
+
+            var _user = {
+                Id: row.find(".Id").find("span").text(),
+                UserId: row.find(".UserId").find("span").text(),
+                Month: row.find(".Month").find("span").text(),
+                Name: row.find(".Name").find("span").text(),
+                WorkHours: row.find(".WorkHours").find("span").text(),
+                CustomerId: row.find(".CustomerId").find("span").text(),
+                Customer: row.find(".Customer").find("span").text(),
+                AllocatedHours: row.find(".AllocatedHours").find("span").text(),
+            }
+            $.ajax({
+                type: "POST",
+                url: "/AllocateTimes/UpdateUser",
+                data: _user,
+                dataType: "json"
+            });
+            console.log(_user)
+        });
+
+        //Cancel
+        $("body").on("click", "#tblAllocateTime .Cancel", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    input.val(span.html());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+            row.find(".Update").hide();
+            $(this).hide();
+        });
+    </script>
+}
