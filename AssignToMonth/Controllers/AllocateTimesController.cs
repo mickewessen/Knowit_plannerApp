@@ -40,7 +40,7 @@ namespace AssignToMonth.Controllers
 
             //pageIndex for user table 
             int userpageIndex = page ?? 1;
-            int userdataCount = 20;
+            int userdataCount = 30;
 
             IQueryable<AssignCustomerToMonth> customers = from item in _context.AssignCustomerToMonths.Include(c => c.Customer)
                                             .Include(m => m.Month)
