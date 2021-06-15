@@ -15,11 +15,12 @@ namespace AssignToMonth.Models
         public virtual AssignCustomerToMonth Customer { get; set; }
         public virtual AssignedMonth User { get; set; }
 
-        public int TotalTime ()
+        public decimal TotalTime ()
         {
             var x = Customer.FTE;
             var u = AllocatedHours;
-            return x * 160-u;
+            var result = Math.Round((x * 160) - u);
+            return result;
         }
 
     }

@@ -54,7 +54,7 @@
                 </td>
                 <td class="FTE">
                     <span>@Html.DisplayFor(modelItem => item.FTE)</span>
-                    <input type="number" class="form-control-sm" value="@item.FTE" style="display:none" />
+                    <input type="text" min="0" step=".01" class="form-control-sm" value="@item.FTE" style="display:none" />
                 </td>
                 <td>
                     @item.FteToHours()

@@ -13,7 +13,7 @@ namespace AssignToMonth.Models
         public int CustomerId { get; set; }
         [Display(Name = "Månad")]
         public int MonthId { get; set; }
-        public int FTE { get; set; }
+        public decimal FTE { get; set; }
 
         [Display(Name = "Kund")]
         public virtual Customer Customer { get; set; }
@@ -23,12 +23,11 @@ namespace AssignToMonth.Models
 
         public ICollection<AllocateTime> AllocateTimes { get; set; }
 
-        public int FteToHours()
+        public decimal FteToHours()
         {
             int x = 160;
-            int y = FTE;
-            var result = x * y;
-
+            decimal y = FTE;
+            var result = Math.Round(x * y);
             return result;
         }
     }
