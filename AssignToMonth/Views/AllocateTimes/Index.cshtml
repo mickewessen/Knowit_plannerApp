@@ -101,58 +101,6 @@
     <tbody>
 
     <tbody>
-        @*@foreach (var user in Model.AllocatedUsers)
-        {
-        <tr>
-            <td class="Id" hidden>
-                <span>@user.AllocateTimes.FirstOrDefault().Id</span>
-            </td>
-            <td class="Month">
-                <span>@Html.DisplayFor(modelItem => user.Month.DisplayMonth)</span>
-            </td>
-            <td class="UserId" hidden>
-                <span>@user.UserId</span>
-            </td>
-            <td class="Name">
-                <span>@Html.DisplayFor(modelItem => user.User.DisplayName) - (@String.Format(("{0:n0}"), user.TotalHours()))</span>
-            </td>
-            <td class="WorkHours">
-                <span>@String.Format(("{0:n0}"), user.TotalHours() - user.AllocateTimes.FirstOrDefault().AllocatedHours)</span>
-            </td>
-            <td class="CustomerId" hidden>
-                <span>@user.AllocateTimes.FirstOrDefault().CustomerId</span>
-            </td>
-            <td class="Customer">
-                @foreach (var customer in user.AllocateTimes)
-                {
-                    <span>@Html.DisplayFor(modelItem => customer.Customer.Customer.Name)</span><br />
-                }
-            </td>
-
-            <td class="AllocatedHours">
-                @foreach (var customer in user.AllocateTimes)
-                {
-                    <span>@Html.DisplayFor(modelItem => user.AllocateTimes.FirstOrDefault().AllocatedHours)</span>
-                    <input type="number" class="form-control-sm" value="@user.AllocateTimes.FirstOrDefault().AllocatedHours" style="display:none" /><br />
-                }
-            </td>
-            <td>
-                @foreach (var customer in user.AllocateTimes)
-                {
-                    <a class="Edit" href="javascript:;">Editera |</a>
-                    <a class="Update" href="javascript:;" style="display:none">Uppdatera |</a>
-                    <a class="Cancel" href="javascript:;" style="display:none">Avbryt</a>
-                    <a class="Delete" href="javascript:;">Ta bort</a>
-                    <br />
-                }
-            </td>
-                <td>
-
-
-                </td>
-
-            </tr>
-        }*@
         @foreach (var item in Model.AllocateTimes)
         {
             <tr>

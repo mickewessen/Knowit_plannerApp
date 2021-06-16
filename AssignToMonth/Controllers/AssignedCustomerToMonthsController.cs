@@ -90,35 +90,6 @@ namespace AssignToMonth.Controllers
             }
             return View(assignCustomers);
         }
-
-
-        //// POST: AssignCustomerToMonths/Create
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,CustomerId,MonthId,FTE")] AssignCustomerToMonth assignCustomerToMonth)
-        //{
-        //    ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", assignCustomerToMonth.CustomerId);
-        //    ViewData["MonthId"] = new SelectList(_context.Months, "Id", "DisplayMonth", assignCustomerToMonth.MonthId);
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (!_context.AssignCustomerToMonths.Any(m => m.MonthId.Equals(assignCustomerToMonth.MonthId)))
-        //        {
-        //            _context.Add(assignCustomerToMonth);
-        //            await _context.SaveChangesAsync();
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        else
-        //        {
-        //            ViewBag.Message = "Kunden är redan planerad för denna månad";
-        //        }
-
-        //    }
-        //    return View(assignCustomerToMonth);
-        //}
-
         #endregion
 
         #region EDIT METHOD
@@ -139,43 +110,7 @@ namespace AssignToMonth.Controllers
             ViewData["MonthId"] = new SelectList(_context.Months, "Id", "DisplayMonth", assignCustomerToMonth.MonthId);
             return View(assignCustomerToMonth);
         }
-
-        // POST: AssignCustomerToMonths/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CustomerId,MonthId,FTE")] AssignCustomerToMonth assignCustomerToMonth)
-        {
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", assignCustomerToMonth.CustomerId);
-            ViewData["MonthId"] = new SelectList(_context.Months, "Id", "DisplayMonth", assignCustomerToMonth.MonthId);
-
-            if (id != assignCustomerToMonth.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(assignCustomerToMonth);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AssignCustomerToMonthExists(assignCustomerToMonth.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(assignCustomerToMonth);
-        }
-
+        
         [HttpPost]
         public async Task<IActionResult> UpdateCustomer(AssignCustomerToMonth _customer)
         {
