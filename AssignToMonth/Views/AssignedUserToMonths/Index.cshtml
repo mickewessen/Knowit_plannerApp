@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AssignToMonth.Models.AssignedMonth>
+﻿@model IPagedList<AssignToMonth.Models.AssignedMonth>
 
 @{
     ViewData["Title"] = "Planering team";
@@ -19,8 +19,11 @@
         {
             <span>År</span>@Html.DropDownList("year", new SelectList(ViewBag.Year), "Välj år", new { @class = "form-control" })
             <span>Månad</span>@Html.DropDownList("month", new SelectList(ViewBag.Month), "Välj månad", new { @class = "form-control" })
-            <span>Användare</span>@Html.DropDownList("user", new SelectList(ViewBag.Users), "Välj användare", new { @class = "form-control" })
-            <input class="btn btn-dark mt-3 col-12" type="submit" value="Sök" />
+            <span>Användare</span>@Html.DropDownList("user", new SelectList(ViewBag.Users), "Välj användare", new { @class = "form-control" })            
+            <div id="userBtn" class="d-flex justify-content-between">
+                <input class="btn btn-dark mt-3 col-5" type="submit" value="Sök" />
+                <a class="btn btn-dark mt-3 col-5" asp-action="Index">Rensa</a>
+            </div>
         }
     </div>
 </p>
@@ -28,22 +31,22 @@
     <thead>
         <tr>
             <th hidden>
-                @Html.DisplayNameFor(model => model.Month.Year)
+                <span>År</span>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Month)
+                <span>Månad</span>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User)
+                <span>Användare</span>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Month.Hours)
+                <span>Timmar</span>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Absence)
+                <span>Frånvaro</span>
             </th>
             <th>
-                Totala timmar
+                <span>Totala timmar</span>
             </th>
             <th></th>
         </tr>
@@ -83,6 +86,7 @@
 </table>
 <br />
 <div class="col-12 align-content-center">
+    Sida @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) av @Model.PageCount
     @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page, currentUser = ViewBag.CurrentUser, currentYear = ViewBag.CurrentYear, currentMonth = ViewBag.CurrentMonth, }), new X.PagedList.Web.Common.PagedListRenderOptions
     {
         ContainerDivClasses = new[] { "navigation" },
@@ -90,6 +94,7 @@
         PageClasses = new[] { "page-link" },
     })
 </div>
+
 
 
 @section Scripts {

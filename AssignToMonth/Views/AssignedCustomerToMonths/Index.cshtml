@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AssignCustomerToMonth>
+﻿@model IPagedList<AssignCustomerToMonth>
 
 @{
     ViewData["Title"] = "Planering kund";
@@ -16,26 +16,31 @@
     {
         <span class="mr-1">År</span>@Html.DropDownList("year", new SelectList(ViewBag.Year), "Välj år", new { @class = "form-control" })
         <span class="mr-1">Månad</span>@Html.DropDownList("month", new SelectList(ViewBag.Month), "Välj månad", new { @class = "form-control" })
-        <input class="btn btn-dark mt-3 col-12" type="submit" value="Sök" />
-    }
+        <div id="customerBtn" class="d-flex justify-content-between">
+            <input class="btn btn-dark mt-3 col-5" type="submit" value="Sök" />
+            <a class="btn btn-dark mt-3 col-5" asp-action="Index">Rensa</a>
+        </div>        
+    }    
 </div>
 
 <table id="tblCustomers" class="table styled-table-customers mt-2">
     <thead>
         <tr>
             <td hidden>
-                @Html.DisplayNameFor(model => model.Id)
+                <span>Id</span>
             </td>
             <th>
-                @Html.DisplayNameFor(model => model.Month)
+                <span>Månad</span>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Customer)
+                <span>Kund</span>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FTE)
+                <span>FTE</span>
             </th>
-            <th>Timmar</th>
+            <th>
+                <span>Timmar</span>
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -71,6 +76,7 @@
 </table>
 
 <div class="col-12 align-content-center">
+    Sida @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) av @Model.PageCount
     @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page, currentYear = ViewBag.CurrentYear, currentMonth = ViewBag.CurrentMonth, }), new X.PagedList.Web.Common.PagedListRenderOptions
     {
         ContainerDivClasses = new[] { "navigation" },

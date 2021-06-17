@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using X.PagedList;
 
 namespace AssignToMonth.Controllers
 {
@@ -23,29 +24,45 @@ namespace AssignToMonth.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int? year, string month)
+        public IActionResult Index(int? year, string month, int? page, int currentYear, string currentMonth)
         {
             ViewBag.Year = (from item in _context.Months
                             select item.Year).Distinct();
             ViewBag.Month = (from item in _context.Months
                              select item.MonthName).Distinct();
 
+            if (year != null || month != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                year = currentYear;
+                month = currentMonth;
+            }
+
+            ViewBag.CurrentYear = year;
+            ViewBag.CurrentMonth = month;
+
+            int pageSize = 12;
+            int pageNumber = (page ?? 1);
+
             var dashBoard = new DashboardViewModel()
             {
                 Users = _context.Users.ToList(),
                 Customers = _context.Customers.ToList(),
                 Months = _context.Months.ToList(),
-                AssignedCustomerToMonths = from item in _context.AssignCustomerToMonths
+                AssignedCustomerToMonths = (from item in _context.AssignCustomerToMonths
                                            orderby item.Month.Id ascending
                                            where item.Month.Year == year || year == null || year == 0
                                            where item.Month.MonthName == month || month == null || month == ""
-                                           select item,
+                                           select item).ToPagedList(pageNumber, pageSize),
 
-                AssignedUsersToMonths = from item in _context.AssignedMonths.Include(m => m.AllocateTimes)
+                AssignedUsersToMonths = (from item in _context.AssignedMonths.Include(m => m.AllocateTimes)
                                         orderby item.Month.Id ascending
                                         where item.Month.Year == year || year == null || year == 0
                                         where item.Month.MonthName == month || month == null || month == ""
-                                        select item,            
+                                        select item).ToPagedList(pageNumber, pageSize),            
             };                         
             return View(dashBoard);
         }

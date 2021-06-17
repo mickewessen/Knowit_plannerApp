@@ -22,7 +22,7 @@ namespace AssignToMonth.Controllers
         }
 
         // GET: AllocateTimes
-        public IActionResult Index(int? year, string month, string customer, string user, int? page)
+        public IActionResult Index(int? year, string month, string customer, int? page, int currentYear, string currentMonth, string currentCustomer)
         {
             ViewBag.Year = (from item in _context.Months
                             orderby item.Year
@@ -34,48 +34,44 @@ namespace AssignToMonth.Controllers
                                  orderby item.Id
                                  select item.Name).Distinct();
 
-            //pageIndex for customer table 
-            int custpageIndex = page ?? 1;
-            int custdataCount = 12;
+            if (year != null || month != null || customer != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                year = currentYear;
+                customer = currentCustomer;
+                month = currentMonth;
+            }
 
-            //pageIndex for user table 
-            int userpageIndex = page ?? 1;
-            int userdataCount = 30;
+            ViewBag.CurrentCustomer = customer;
+            ViewBag.CurrentYear = year;
+            ViewBag.CurrentMonth = month;
 
-            IQueryable<AssignCustomerToMonth> customers = from item in _context.AssignCustomerToMonths.Include(c => c.Customer)
-                                            .Include(m => m.Month)
-                                                .Include(a => a.AllocateTimes)
-                                                          orderby item.Month.Id
-                                                          where item.Month.Year == year || year == null || year == 0
-                                                          where item.Month.MonthName == month || month == null || month == ""
-                                                          where item.Customer.Name == customer || customer == null || customer == ""
-                                                          select item;
-
-            IQueryable<AllocateTime> allocateTimes = from item in _context.AllocateTime
-                                       .Include(u => u.User.User)
-                                         .Include(u => u.Customer.Customer)
-                                             .Include(u => u.User.Month)
-                                                     orderby item.User.Month.Id
-                                                     where item.User.Month.Year == year || year == null || year == 0
-                                                     where item.User.Month.MonthName == month || month == null || month == ""
-                                                     where item.Customer.Customer.Name == customer || customer == null || customer == ""
-                                                     select item;
-
-            IQueryable<AssignedMonth> users = from item in _context.AssignedMonths.Include(u => u.User)
-                                              .Include(m => m.Month)
-                                                .Include(a => a.AllocateTimes)
-                                                      orderby item.Month.Id
-                                                      where item.Month.Year == year || year == null || year == 0
-                                                      where item.Month.MonthName == month || month == null || month == ""
-                                                      where item.User.DisplayName == user || user == null || user == ""
-                                                      select item;
-
+            int pageNumber = page ?? 1;
+            int pageSize = 12;
 
             var viewModel = new AllocateTimeViewModel()
             {
-                GetAllCustomers = customers.ToPagedList(custpageIndex, custdataCount),
-                AllocateTimes = allocateTimes.ToPagedList(userpageIndex, userdataCount),
-                AllocatedUsers = users.ToPagedList(userpageIndex, userdataCount)                
+                GetAllCustomers = from item in _context.AssignCustomerToMonths.Include(c => c.Customer)
+                                            .Include(m => m.Month)
+                                                .Include(a => a.AllocateTimes)
+                                  orderby item.Month.Id
+                                  where item.Month.Year == year || year == null || year == 0
+                                  where item.Month.MonthName == month || month == null || month == ""
+                                  where item.Customer.Name == customer || customer == null || customer == ""
+                                  select item,
+
+                AllocateTimes = (from item in _context.AllocateTime
+                                       .Include(u => u.User.User)
+                                         .Include(u => u.Customer.Customer)
+                                             .Include(u => u.User.Month)
+                                 orderby item.User.Month.Id
+                                 where item.User.Month.Year == year || year == null || year == 0
+                                 where item.User.Month.MonthName == month || month == null || month == ""
+                                 where item.Customer.Customer.Name == customer || customer == null || customer == ""
+                                 select item).ToPagedList(pageNumber, pageSize),   
             };
 
             return View(viewModel);

@@ -9,8 +9,7 @@ namespace AssignToMonth.ViewModels
 {
     public class AllocateTimeViewModel
     {
-        public IPagedList<AssignCustomerToMonth> GetAllCustomers { get; set; }
-        public IEnumerable<AssignedMonth> AllocatedUsers { get; set; }
+        public IEnumerable<AssignCustomerToMonth> GetAllCustomers { get; set; }
         public IPagedList<AllocateTime> AllocateTimes { get; set; }
         public IEnumerable<Month> Months { get; set; }
     }

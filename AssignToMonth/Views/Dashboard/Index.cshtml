@@ -40,11 +40,15 @@
 <p>
     @using (Html.BeginForm("Index", "Dashboard", FormMethod.Get))
     {
-        <div class="col-2 p-0">
-            <span>År</span>@Html.DropDownList("year", new SelectList(ViewBag.Year), "Välj år", new { @class = "form-control" })
-            <span>Månad</span>@Html.DropDownList("month", new SelectList(ViewBag.Month), "Välj månad", new { @class = "form-control" })
-            <input class="btn btn-dark mt-3 col-12" type="submit" value="Sök" />
+    <div class="col-2 p-0">
+        <span>År</span>@Html.DropDownList("year", new SelectList(ViewBag.Year), "Välj år", new { @class = "form-control" })
+        <span>Månad</span>@Html.DropDownList("month", new SelectList(ViewBag.Month), "Välj månad", new { @class = "form-control" })
+        <div id="userBtn" class="d-flex justify-content-between">
+            <input class="btn btn-dark mt-3 col-5" type="submit" value="Sök" />
+            <a class="btn btn-dark mt-3 col-5" asp-action="Index">Rensa</a>
         </div>
+        
+    </div>
 
     }
 </p>
@@ -94,7 +98,7 @@
                                 }
                             </td>
                             <td class="hoursLeft">
-                                @{ 
+                                @{
                                     var value = (user.TotalHours() - sum);
                                     var displayValue = String.Format("{0:N0}", value);
                                     @Html.DisplayTextFor(m => displayValue);
@@ -104,6 +108,15 @@
                     }
                 </tbody>
             </table>
+            <div class="col-12 align-content-center">
+                Sida @(Model.AssignedUsersToMonths.PageCount < Model.AssignedUsersToMonths.PageNumber ? 0 : Model.AssignedUsersToMonths.PageNumber) av @Model.AssignedUsersToMonths.PageCount
+                @Html.PagedListPager(Model.AssignedUsersToMonths, page => Url.Action("Index", new { page, currentYear = ViewBag.CurrentYear, currentMonth = ViewBag.CurrentMonth, }), new X.PagedList.Web.Common.PagedListRenderOptions
+                {
+                    ContainerDivClasses = new[] { "navigation" },
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                })
+            </div>
         </div>
         <div class="tab-pane container fade p-0" id="menu1">
             <h5 class="text-uppercase p-2 text-center">Kunder</h5>
@@ -158,6 +171,15 @@
                     }
                 </tbody>
             </table>
+            <div class="col-12 align-content-center">
+                Sida @(Model.AssignedCustomerToMonths.PageCount < Model.AssignedCustomerToMonths.PageNumber ? 0 : Model.AssignedCustomerToMonths.PageNumber) av @Model.AssignedCustomerToMonths.PageCount
+                @Html.PagedListPager(Model.AssignedCustomerToMonths, page => Url.Action("Index", new { page }), new X.PagedList.Web.Common.PagedListRenderOptions
+                {
+                    ContainerDivClasses = new[] { "navigation" },
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                })
+            </div>
         </div>
     </div>
 </div>

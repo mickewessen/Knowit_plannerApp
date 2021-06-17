@@ -18,7 +18,10 @@
             <span class="mr-1">År</span>@Html.DropDownList("year", new SelectList(ViewBag.Year), "Välj år", new { @class = "form-control" })
             <span class="mr-1">Månad</span>@Html.DropDownList("month", new SelectList(ViewBag.Month), "Välj månad", new { @class = "form-control" })
             <span class="mr-1">Kund</span>@Html.DropDownList("customer", new SelectList(ViewBag.Customers), "Välj kund", new { @class = "form-control" })
-            <input class="btn btn-dark mt-3 col-12" type="submit" value="Sök" />
+            <div id="userBtn" class="d-flex justify-content-between">
+                <input class="btn btn-dark mt-3 col-5" type="submit" value="Sök" />
+                <a class="btn btn-dark mt-3 col-5" asp-action="Index">Rensa</a>
+            </div>            
         }
     </div>
 
@@ -115,7 +118,8 @@
                 </td>
                 <td class="Name">
                     <span>
-                        @Html.DisplayFor(modelItem => item.User.User.DisplayName) @*- (@String.Format(("{0:n0}"), item.User.TotalHours()))*@</span>
+                        @Html.DisplayFor(modelItem => item.User.User.DisplayName) @*- (@String.Format(("{0:n0}"), item.User.TotalHours()))*@
+                    </span>
                 </td>
                 <td class="WorkHours">
                     <span>
@@ -149,6 +153,15 @@
         }
     </tbody>
 </table>
+<div class="col-12 align-content-center">
+    Sida @(Model.AllocateTimes.PageCount < Model.AllocateTimes.PageNumber ? 0 : Model.AllocateTimes.PageNumber) av @Model.AllocateTimes.PageCount
+    @Html.PagedListPager(Model.AllocateTimes, page => Url.Action("Index", new { page, currentYear = ViewBag.CurrentYear, currentMonth = ViewBag.CurrentMonth, currentCustomer = ViewBag.CurrentCustomer }), new X.PagedList.Web.Common.PagedListRenderOptions
+    {
+        ContainerDivClasses = new[] { "navigation" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" },
+    })
+</div>
 
 @section Scripts {
     <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>

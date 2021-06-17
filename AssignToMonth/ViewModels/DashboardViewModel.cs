@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using X.PagedList;
 
 namespace AssignToMonth.ViewModels
 {
@@ -10,8 +11,8 @@ namespace AssignToMonth.ViewModels
     {
         public IEnumerable<User> Users { get; set; }
         public IEnumerable<Customer> Customers { get; set; }
-        public IEnumerable<AssignCustomerToMonth> AssignedCustomerToMonths { get; set; }
-        public IEnumerable<AssignedMonth> AssignedUsersToMonths { get; set; }
+        public IPagedList<AssignCustomerToMonth> AssignedCustomerToMonths { get; set; }
+        public IPagedList<AssignedMonth> AssignedUsersToMonths { get; set; }
         public IEnumerable<Month> Months { get; set; }
         public IEnumerable<AllocateTime> AllocateTimes { get; set; }
 
